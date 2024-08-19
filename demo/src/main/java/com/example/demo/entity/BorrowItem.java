@@ -100,4 +100,19 @@ public class BorrowItem {
     public void setParentid(Integer parentid) {
         this.parentid = parentid;
     }
+
+    @Override
+    public String toString() {
+        String returnornot = isReturned==0?"否":"是";
+        return "借阅条目{" +
+                "用户id=" + userid +
+                ", 图书id=" + bookid +
+                ", 借阅时间='" + borrowdate + '\'' +
+                ", 用户名='" + username + '\'' +
+                ", 书名='" + bookname + '\'' +
+                ", 详情='" + bookdescription + '\'' +
+                ", 数量=" + amount +
+                ", 是否归还=" + returnornot +
+                '}';
+    }
 }

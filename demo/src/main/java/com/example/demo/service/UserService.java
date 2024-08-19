@@ -25,6 +25,7 @@ public class UserService {
             return false;}
         if (result.getPassword().equals(user.getPassword())) {
             System.out.println("User logged in");
+            user.setAdmin(result.getAdmin());
             return true;
         } else {
             System.out.println("Wrong password");

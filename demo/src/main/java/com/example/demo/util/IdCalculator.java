@@ -1,8 +1,11 @@
 package com.example.demo.util;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
+@Component
 public class IdCalculator {
 
     public static int calculateUserId(String string1, String string2) {

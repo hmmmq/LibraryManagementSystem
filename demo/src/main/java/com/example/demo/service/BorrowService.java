@@ -10,7 +10,10 @@ import com.example.demo.util.DateCalculator;
 import com.example.demo.util.IdCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BorrowService {
@@ -22,6 +25,8 @@ public class BorrowService {
     IdCalculator IdCalculator;
     @Autowired
     DateCalculator dateCalculator;
+    @Autowired
+    BookService bookService;
 
     public void borrowBook(User user, List<Book> books) {
         Borrow borrow = new Borrow();
@@ -30,6 +35,8 @@ public class BorrowService {
         String date = dateCalculator.calculateDate();
         borrow.setBorrowdate(date);
         borrow.setIdborrow(IdCalculator.calculateUserId(user.getName(), date));
+        borrow.setTotalamount(0);
+        borrowMapper.insert(borrow);
         int total_amount = 0;
         for (Book b : books) {
             BorrowItem borrowItem = new BorrowItem();
@@ -43,31 +50,56 @@ public class BorrowService {
             borrowItem.setUsername(user.getName());
             borrowItem.setUserid(user.getIduser());
             borrowItem.setBorrowdate(date);
+            borrowItem.setIsReturned(0);
+            borrowItem.setParentid(borrow.getIdborrow());
             borrowItemMapper.insert(borrowItem);
             total_amount+= 1;
+            b.setAmount(b.getAmount()-1);
+            bookService.updateBook(b);
         }
         borrow.setTotalamount(total_amount);
-        borrowMapper.insert(new Borrow());
-        System.out.println("Book borrowed");
+        borrowMapper.updateByPrimaryKey(borrow);
+        System.out.println("借阅成功");
+
+        checkBorrow(user);
     }
     public void returnBook(User user,List<Book> books){
+        HashMap<Integer,Integer> bookHashMap = new HashMap<>();
+        for(Book book:books){
+            bookHashMap.put(book.getIdbook(), bookHashMap.getOrDefault(book.getIdbook(),0)+1);
+        }
+
         List<BorrowItem> borrowItems = borrowItemMapper.selectAll();
         for(BorrowItem borrowItem:borrowItems){
-            if(borrowItem.getUserid() == user.getIduser()){
-                for(Book book:books){
-                    if(borrowItem.getBookid() == book.getIdbook()){
-                        borrowItemMapper.deleteByPrimaryKey(borrowItem.getIdborrowitem());
-                        System.out.println("Book returned");
+            if(borrowItem.getUserid().equals(user.getIduser())){
+                    if(bookHashMap.containsKey(borrowItem.getBookid())&&borrowItem.getIsReturned().equals(0)){
+                        borrowItem.setIsReturned(1);
+                        borrowItemMapper.updateByPrimaryKey(borrowItem);
+                        Borrow borrow = borrowMapper.selectByPrimaryKey(borrowItem.getParentid());
+                        borrow.setTotalamount(borrow.getTotalamount()-1);
+                        borrowMapper.updateByPrimaryKey(borrow);
+                        bookHashMap.put(borrowItem.getBookid(),bookHashMap.get(borrowItem.getBookid())-1);
+                        if (bookHashMap.get(borrowItem.getBookid())==0){
+                            bookHashMap.remove(borrowItem.getBookid());
+                        }
                     }
-                }
+
             }
         }
+        for (Map.Entry<Integer,Integer> entry:bookHashMap.entrySet()){
+            Book book = bookService.getBook(entry.getKey());
+            book.setAmount(book.getAmount()+entry.getValue());
+            bookService.updateBook(book);
+        }
+        System.out.println("归还成功");
+        checkBorrow(user);
     }
     public void checkBorrow(User user){
         List<BorrowItem> borrowItems = borrowItemMapper.selectAll();
+        System.out.println("你当前借阅的书籍:");
         for(BorrowItem borrowItem:borrowItems){
-            if(borrowItem.getUserid() == user.getIduser()){
-                System.out.println(borrowItem);
+            if(borrowItem.getUserid().equals(user.getIduser())){
+                System.out.println(borrowItem.toString());
             }
         }
 
