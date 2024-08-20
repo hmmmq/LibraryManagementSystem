@@ -17,10 +17,10 @@ public class BookService {
     public boolean addBook(Book book) {
         int i = bookMapper.insert(book);
         if (i == -1) {
-            System.out.println("Book already exists");
+//            System.out.println("Book already exists");
             return false;
         } else {
-            System.out.println("Book added");
+//            System.out.println("Book added");
             return true;
         }
     }
@@ -28,26 +28,26 @@ public class BookService {
     public boolean deleteBook(int id) {
         int i = bookMapper.deleteByPrimaryKey(id);
         if (i == -1) {
-            System.out.println("Book not found");
+//            System.out.println("Book not found");
             return false;
         } else {
-            System.out.println("Book deleted");
+//            System.out.println("Book deleted");
             return true;
         }
     }
 
     public void updateBook(Book book) {
         bookMapper.updateByPrimaryKey(book);
-        System.out.println("Book updated");
+//        System.out.println("Book updated");
     }
 
     public Book getBook(int id) {
         Book book = bookMapper.selectByPrimaryKey(id);
-        if (book == null) {
-            System.out.println("Book not found");
-        } else {
-            System.out.println("Book found");
-        }
+//        if (book == null) {
+//            System.out.println("Book not found");
+//        } else {
+//            System.out.println("Book found");
+//        }
         return book;
     }
 

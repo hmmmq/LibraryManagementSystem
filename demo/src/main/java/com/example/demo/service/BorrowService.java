@@ -78,19 +78,20 @@ public class BorrowService {
                         Borrow borrow = borrowMapper.selectByPrimaryKey(borrowItem.getParentid());
                         borrow.setTotalamount(borrow.getTotalamount()-1);
                         borrowMapper.updateByPrimaryKey(borrow);
+                        Book book = bookService.getBook(borrowItem.getBookid());
+                        book.setAmount(book.getAmount()+1);
+                        bookService.updateBook(book);
                         bookHashMap.put(borrowItem.getBookid(),bookHashMap.get(borrowItem.getBookid())-1);
                         if (bookHashMap.get(borrowItem.getBookid())==0){
                             bookHashMap.remove(borrowItem.getBookid());
                         }
+                        if (bookHashMap.isEmpty()){
+                            break;
+                        }
                     }
-
             }
         }
-        for (Map.Entry<Integer,Integer> entry:bookHashMap.entrySet()){
-            Book book = bookService.getBook(entry.getKey());
-            book.setAmount(book.getAmount()+entry.getValue());
-            bookService.updateBook(book);
-        }
+
         System.out.println("归还成功");
         checkBorrow(user);
     }

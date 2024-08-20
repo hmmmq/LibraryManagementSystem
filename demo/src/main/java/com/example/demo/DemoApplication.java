@@ -153,8 +153,9 @@ public class DemoApplication {
                 System.out.println("成功登录图书管理系统");
                 System.out.println("1.查看图书");
                 System.out.println("2.添加图书");
-                System.out.println("3.删除图书");
-                System.out.println("4.退出");
+                System.out.println("3.修改图书");
+                System.out.println("4.删除图书");
+                System.out.println("5.退出");
                 System.out.println("请输入你的选择：");
                 // 读取用户输入
                 java.util.Scanner scanner = new java.util.Scanner(System.in);
@@ -183,24 +184,14 @@ public class DemoApplication {
                         bookService.addBook(book);
                         break;
                     case 3:
-                        System.out.println("删除图书");
-                        System.out.println("请输入要删除的图书编号：");
-                        int idbook = scanner.nextInt();
-                        bookService.deleteBook(idbook);
-                        break;
-                    case 4:
-                        System.out.println("退出");
-                        System.exit(0);
-                        break;
-                    case 5:
                         System.out.println("修改图书");
                         System.out.println("请输入要修改的图书编号：");
                         int idbook2 = scanner.nextInt();
-                        System.out.println("请输入要修改的图书名：");
+                        System.out.println("请输入修改后的图书名：");
                         String bookname2 = scanner.next();
-                        System.out.println("请输入要修改的图书详情：");
+                        System.out.println("请输入修改后的图书详情：");
                         String description2 = scanner.next();
-                        System.out.println("请输入要修改的图书数量：");
+                        System.out.println("请输入修改后的图书数量：");
                         int amount2 = scanner.nextInt();
                         Book book2 = new Book();
                         book2.setIdbook(idbook2);
@@ -208,6 +199,16 @@ public class DemoApplication {
                         book2.setDescription(description2);
                         book2.setAmount(amount2);
                         bookService.updateBook(book2);
+                        break;
+                    case 4:
+                        System.out.println("删除图书");
+                        System.out.println("请输入要删除的图书编号：");
+                        int idbook = scanner.nextInt();
+                        bookService.deleteBook(idbook);
+                        break;
+                    case 5:
+                        System.out.println("退出");
+                        System.exit(0);
                         break;
                     default:
                         System.out.println("输入错误");
